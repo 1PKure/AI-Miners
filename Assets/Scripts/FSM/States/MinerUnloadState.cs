@@ -4,17 +4,21 @@ public class MinerUnloadState : FsmState<MinerAgentController>
     {
         owner.SetCurrentStateName("Unloading");
 
-        if (owner.HomeBase != null && owner.CarriedGold > 0)
+        if (owner.HomeBase != null && owner.CarriedAmount > 0)
         {
-            owner.HomeBase.DepositGold(owner.CarriedGold);
+            owner.HomeBase.Deposit(
+                owner.CarriedResourceType,
+                owner.CarriedAmount,
+                owner.CarriedScorePerUnit
+            );
         }
 
-        owner.ClearGold();
+        owner.ClearCarriedResource();
 
-        if (owner.CurrentMine != null)
+        if (owner.CurrentResourceNode != null)
         {
-            owner.CurrentMine.Release(owner);
-            owner.ClearAssignedMine();
+            owner.CurrentResourceNode.Release(owner);
+            owner.ClearAssignedResourceNode();
         }
 
         owner.SendEvent(MinerFsmEvents.UnloadComplete);

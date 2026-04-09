@@ -1,16 +1,22 @@
 using UnityEngine;
 
-public class GoldMine : MonoBehaviour
+public class ResourceNode : MonoBehaviour
 {
-    [SerializeField] private int currentGold = 50;
+    [Header("Resource")]
+    [SerializeField] private ResourceType resourceType;
+    [SerializeField] private int currentAmount = 50;
+    [SerializeField] private int scorePerUnit = 1;
+    [SerializeField] private float mineInterval = 0.5f;
     [SerializeField] private Transform interactionPoint;
 
     private MinerAgentController reservedBy;
 
-    public int CurrentGold => currentGold;
-    public bool HasGold => currentGold > 0;
+    public ResourceType ResourceType => resourceType;
+    public int CurrentAmount => currentAmount;
+    public int ScorePerUnit => scorePerUnit;
+    public float MineInterval => mineInterval;
+    public bool HasResources => currentAmount > 0;
     public bool IsOccupied => reservedBy != null;
-    public MinerAgentController ReservedBy => reservedBy;
     public Vector3 InteractionPosition => interactionPoint != null ? interactionPoint.position : transform.position;
 
     public bool TryReserve(MinerAgentController miner)
@@ -18,7 +24,7 @@ public class GoldMine : MonoBehaviour
         if (miner == null)
             return false;
 
-        if (!HasGold)
+        if (!HasResources)
             return false;
 
         if (reservedBy != null && reservedBy != miner)
@@ -36,18 +42,16 @@ public class GoldMine : MonoBehaviour
     public void Release(MinerAgentController miner)
     {
         if (reservedBy == miner)
-        {
             reservedBy = null;
-        }
     }
 
-    public int ExtractGold(int amount)
+    public int Extract(int amount)
     {
-        if (currentGold <= 0)
+        if (currentAmount <= 0)
             return 0;
 
-        int extracted = Mathf.Min(amount, currentGold);
-        currentGold -= extracted;
+        int extracted = Mathf.Min(amount, currentAmount);
+        currentAmount -= extracted;
         return extracted;
     }
 }

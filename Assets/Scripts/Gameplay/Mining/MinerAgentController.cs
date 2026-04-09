@@ -7,31 +7,38 @@ public class MinerAgentController : MonoBehaviour
     [SerializeField] private BaseStorage homeBase;
 
     [Header("Stats")]
-    [SerializeField] private int maxCarryGold = 10;
+    [SerializeField] private int maxCarryAmount = 10;
     [SerializeField] private float interactionDistance = 1.25f;
     [SerializeField] private int miningPerTick = 1;
 
     [Header("Debug")]
     [SerializeField] private string currentStateName;
-    [SerializeField] private int carriedGold;
+    [SerializeField] private int carriedAmount;
+    [SerializeField] private ResourceType carriedResourceType;
+    [SerializeField] private bool hasResource;
 
     private FiniteStateMachine<MinerAgentController> stateMachine;
     private PathNodeAgent pathNodeAgent;
-    private GoldMine currentMine;
+    private ResourceNode currentResourceNode;
+    private int carriedScorePerUnit;
 
     public BaseStorage HomeBase => homeBase;
     public PathNodeAgent PathNodeAgent => pathNodeAgent;
-    public GoldMine CurrentMine => currentMine;
-    public int CarriedGold => carriedGold;
-    public int MaxCarryGold => maxCarryGold;
+    public ResourceNode CurrentResourceNode => currentResourceNode;
+
+    public int CarriedAmount => carriedAmount;
+    public ResourceType CarriedResourceType => carriedResourceType;
+    public bool HasResource => hasResource;
+    public int CarriedScorePerUnit => carriedScorePerUnit;
+
+    public int MaxCarryAmount => maxCarryAmount;
     public float InteractionDistance => interactionDistance;
     public int MiningPerTick => miningPerTick;
-
+    public string CurrentStateName => currentStateName;
 
     private void Awake()
     {
         pathNodeAgent = GetComponent<PathNodeAgent>();
-
     }
 
     private void Start()
@@ -60,6 +67,9 @@ public class MinerAgentController : MonoBehaviour
 
     private void Update()
     {
+        if (stateMachine == null)
+            return;
+
         stateMachine.Update();
     }
 
@@ -68,30 +78,35 @@ public class MinerAgentController : MonoBehaviour
         currentStateName = stateName;
     }
 
-    public void AssignMine(GoldMine mine)
+    public void AssignResourceNode(ResourceNode node)
     {
-        currentMine = mine;
+        currentResourceNode = node;
     }
 
-    public void ClearAssignedMine()
+    public void ClearAssignedResourceNode()
     {
-        currentMine = null;
+        currentResourceNode = null;
     }
 
-    public void AddGold(int amount)
+    public void AddResource(ResourceType type, int amount, int scorePerUnit)
     {
-        carriedGold += amount;
-        carriedGold = Mathf.Min(carriedGold, maxCarryGold);
+        carriedResourceType = type;
+        carriedAmount += amount;
+        carriedAmount = Mathf.Min(carriedAmount, maxCarryAmount);
+        carriedScorePerUnit = scorePerUnit;
+        hasResource = carriedAmount > 0;
     }
 
-    public void ClearGold()
+    public void ClearCarriedResource()
     {
-        carriedGold = 0;
+        carriedAmount = 0;
+        carriedScorePerUnit = 0;
+        hasResource = false;
     }
 
     public bool IsInventoryFull()
     {
-        return carriedGold >= maxCarryGold;
+        return carriedAmount >= maxCarryAmount;
     }
 
     public bool IsNearTarget(Vector3 targetPosition)
@@ -104,16 +119,14 @@ public class MinerAgentController : MonoBehaviour
         stateMachine.SendEvent(trigger);
     }
 
-    public GoldMine FindAvailableMine()
+    public ResourceNode FindAvailableResourceNode()
     {
-        GoldMine[] mines = Object.FindObjectsByType<GoldMine>(FindObjectsSortMode.None);
+        ResourceNode[] nodes = Object.FindObjectsByType<ResourceNode>(FindObjectsSortMode.None);
 
-        foreach (GoldMine mine in mines)
+        foreach (ResourceNode node in nodes)
         {
-            if (mine.TryReserve(this))
-            {
-                return mine;
-            }
+            if (node.TryReserve(this))
+                return node;
         }
 
         return null;

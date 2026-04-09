@@ -4,48 +4,53 @@ public class MinerGoToMineState : FsmState<MinerAgentController>
     {
         owner.SetCurrentStateName("Going To Mine");
 
-        if (owner.CurrentMine == null)
+        if (owner.CurrentResourceNode == null)
         {
             owner.SendEvent(MinerFsmEvents.MineLost);
             return;
         }
 
-        if (!owner.CurrentMine.IsReservedBy(owner) || !owner.CurrentMine.HasGold)
+        if (!owner.CurrentResourceNode.IsReservedBy(owner) || !owner.CurrentResourceNode.HasResources)
         {
-            owner.CurrentMine.Release(owner);
-            owner.ClearAssignedMine();
+            owner.CurrentResourceNode.Release(owner);
+            owner.ClearAssignedResourceNode();
             owner.SendEvent(MinerFsmEvents.MineLost);
             return;
         }
 
-        owner.PathNodeAgent.SetDestination(owner.CurrentMine.InteractionPosition);
+        owner.PathNodeAgent.SetDestination(owner.CurrentResourceNode.InteractionPosition);
+
+        if (owner.PathNodeAgent.HasReachedDestination)
+        {
+            owner.SendEvent(MinerFsmEvents.ReachedMine);
+        }
     }
 
     public override void Update()
     {
-        if (owner.CurrentMine == null)
+        if (owner.CurrentResourceNode == null)
         {
             owner.SendEvent(MinerFsmEvents.MineLost);
             return;
         }
 
-        if (!owner.CurrentMine.IsReservedBy(owner) || !owner.CurrentMine.HasGold)
+        if (!owner.CurrentResourceNode.IsReservedBy(owner) || !owner.CurrentResourceNode.HasResources)
         {
-            owner.CurrentMine.Release(owner);
-            owner.ClearAssignedMine();
+            owner.CurrentResourceNode.Release(owner);
+            owner.ClearAssignedResourceNode();
             owner.PathNodeAgent.StopMoving();
             owner.SendEvent(MinerFsmEvents.MineLost);
             return;
         }
 
-        if (owner.IsNearTarget(owner.CurrentMine.InteractionPosition))
+        if (owner.PathNodeAgent.HasReachedDestination)
         {
-            owner.PathNodeAgent.StopMoving();
             owner.SendEvent(MinerFsmEvents.ReachedMine);
         }
     }
 
     public override void Exit()
     {
+        owner.PathNodeAgent.StopMoving();
     }
 }

@@ -20,6 +20,21 @@ public class PathfindingManager : MonoBehaviourSingleton<PathfindingManager>
     {
         SetStrategy(currentAlgorithm);
     }
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Alpha1))
+            SetAlgorithm(PathfindingAlgorithmType.BFS);
+
+        if (Input.GetKeyDown(KeyCode.Alpha2))
+            SetAlgorithm(PathfindingAlgorithmType.DFS);
+
+        if (Input.GetKeyDown(KeyCode.Alpha3))
+            SetAlgorithm(PathfindingAlgorithmType.Dijkstra);
+
+        if (Input.GetKeyDown(KeyCode.Alpha4))
+            SetAlgorithm(PathfindingAlgorithmType.AStar);
+    }
+
 
     public void SetAlgorithm(PathfindingAlgorithmType algorithmType)
     {
@@ -39,28 +54,28 @@ public class PathfindingManager : MonoBehaviourSingleton<PathfindingManager>
     }
 
     private void SetStrategy(PathfindingAlgorithmType algorithmType)
-{
-    switch (algorithmType)
     {
-        case PathfindingAlgorithmType.BFS:
-            currentStrategy = new BFSPathfindingStrategy();
-            break;
+        switch (algorithmType)
+        {
+            case PathfindingAlgorithmType.BFS:
+                currentStrategy = new BFSPathfindingStrategy();
+                break;
 
-        case PathfindingAlgorithmType.DFS:
-            currentStrategy = new DFSPathfindingStrategy();
-            break;
+            case PathfindingAlgorithmType.DFS:
+                currentStrategy = new DFSPathfindingStrategy();
+                break;
 
-        case PathfindingAlgorithmType.Dijkstra:
-            currentStrategy = new DijkstraPathfindingStrategy();
-            break;
+            case PathfindingAlgorithmType.Dijkstra:
+                currentStrategy = new DijkstraPathfindingStrategy();
+                break;
 
-        case PathfindingAlgorithmType.AStar:
-            currentStrategy = new AStarPathfindingStrategy();
-            break;
+            case PathfindingAlgorithmType.AStar:
+                currentStrategy = new AStarPathfindingStrategy();
+                break;
 
-        default:
-            currentStrategy = new BFSPathfindingStrategy();
-            break;
+            default:
+                currentStrategy = new BFSPathfindingStrategy();
+                break;
+        }
     }
-}
 }

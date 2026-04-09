@@ -22,12 +22,15 @@ public class PathNodeAgent : MonoBehaviour
     [SerializeField] private bool drawPath = true;
     [SerializeField] private float destinationUpdateThreshold = 0.5f;
 
+
     private List<PathNode> currentPath = new List<PathNode>();
     private int currentPathIndex = 0;
     private bool isMoving = false;
     private Vector3 initialPosition;
     private Vector3 lastRequestedDestination;
     private bool hasRequestedDestination = false;
+    private bool hasReachedDestination = false;
+    public bool HasReachedDestination => hasReachedDestination;
 
     public List<PathNode> CurrentPath => currentPath;
     public bool IsMoving => isMoving;
@@ -81,6 +84,7 @@ public class PathNodeAgent : MonoBehaviour
         currentPathIndex = 0;
         currentPath.Clear();
         hasRequestedDestination = false;
+        hasReachedDestination = false;
     }
 
     [ContextMenu("Request Path To Debug Target")]
@@ -102,6 +106,8 @@ public class PathNodeAgent : MonoBehaviour
 
     public void SetDestination(Vector3 worldPosition, bool forceRefresh)
     {
+        hasReachedDestination = false;
+
         if (nodeGenerator == null)
         {
             Debug.LogWarning("PathNodeAgent: missing PathNodeGenerator reference.");
@@ -159,7 +165,17 @@ public class PathNodeAgent : MonoBehaviour
 
         currentPath = newPath;
         currentPathIndex = 0;
-        isMoving = currentPath.Count > 0;
+
+        if (currentPath.Count == 0)
+        {
+            isMoving = false;
+            hasReachedDestination = true;
+        }
+        else
+        {
+            isMoving = true;
+            hasReachedDestination = false;
+        }
 
         lastRequestedDestination = worldPosition;
         hasRequestedDestination = true;
@@ -179,6 +195,7 @@ public class PathNodeAgent : MonoBehaviour
         if (currentPathIndex >= currentPath.Count)
         {
             isMoving = false;
+            hasReachedDestination = true;
             return;
         }
 
@@ -208,6 +225,7 @@ public class PathNodeAgent : MonoBehaviour
             if (currentPathIndex >= currentPath.Count)
             {
                 isMoving = false;
+                hasReachedDestination = true;
                 Debug.Log("PathNodeAgent: destination reached.");
             }
         }

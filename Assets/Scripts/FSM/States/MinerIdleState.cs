@@ -11,7 +11,7 @@ public class MinerIdleState : FsmState<MinerAgentController>
         owner.PathNodeAgent.StopMoving();
         retryTimer = 0f;
 
-        TryAssignMine();
+        TryAssignResourceNode();
     }
 
     public override void Update()
@@ -21,7 +21,7 @@ public class MinerIdleState : FsmState<MinerAgentController>
         if (retryTimer <= 0f)
         {
             retryTimer = retryInterval;
-            TryAssignMine();
+            TryAssignResourceNode();
         }
     }
 
@@ -29,13 +29,13 @@ public class MinerIdleState : FsmState<MinerAgentController>
     {
     }
 
-    private void TryAssignMine()
+    private void TryAssignResourceNode()
     {
-        GoldMine mine = owner.FindAvailableMine();
+        ResourceNode node = owner.FindAvailableResourceNode();
 
-        if (mine != null)
+        if (node != null)
         {
-            owner.AssignMine(mine);
+            owner.AssignResourceNode(node);
             owner.SendEvent(MinerFsmEvents.MineAssigned);
         }
     }
