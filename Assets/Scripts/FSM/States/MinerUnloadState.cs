@@ -13,7 +13,7 @@ public class MinerUnloadState : FsmState<MinerAgentController>
 
         if (owner.CurrentMine != null)
         {
-            owner.CurrentMine.Release();
+            owner.CurrentMine.Release(owner);
             owner.ClearAssignedMine();
         }
 

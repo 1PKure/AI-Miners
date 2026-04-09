@@ -141,9 +141,12 @@ public class PathNodeGenerator : MonoBehaviour
         if (!IsInsideGrid(x, y))
             return;
 
+        if (currentNode == null || !currentNode.IsWalkable)
+            return;
+
         PathNode neighbor = grid[x, y];
 
-        if (neighbor == null)
+        if (neighbor == null || !neighbor.IsWalkable)
             return;
 
         currentNode.AddNeighbor(neighbor);

@@ -46,8 +46,12 @@ public class MinerAgentController : MonoBehaviour
 
         stateMachine.AddTransition<MinerIdleState, MinerGoToMineState>(MinerFsmEvents.MineAssigned);
         stateMachine.AddTransition<MinerGoToMineState, MinerMiningState>(MinerFsmEvents.ReachedMine);
+        stateMachine.AddTransition<MinerGoToMineState, MinerIdleState>(MinerFsmEvents.MineLost);
+
         stateMachine.AddTransition<MinerMiningState, MinerReturnToBaseState>(MinerFsmEvents.InventoryFull);
         stateMachine.AddTransition<MinerMiningState, MinerReturnToBaseState>(MinerFsmEvents.MineEmpty);
+        stateMachine.AddTransition<MinerMiningState, MinerIdleState>(MinerFsmEvents.MineLost);
+
         stateMachine.AddTransition<MinerReturnToBaseState, MinerUnloadState>(MinerFsmEvents.ReachedBase);
         stateMachine.AddTransition<MinerUnloadState, MinerIdleState>(MinerFsmEvents.UnloadComplete);
 
@@ -106,7 +110,7 @@ public class MinerAgentController : MonoBehaviour
 
         foreach (GoldMine mine in mines)
         {
-            if (mine.TryReserve())
+            if (mine.TryReserve(this))
             {
                 return mine;
             }

@@ -126,8 +126,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nodeGenerator: {fileID: 0}
   debugTarget: {fileID: 0}
-  moveSpeed: 3
-  reachDistance: 0.05
+  moveSpeed: 4
+  reachDistance: 1
   requestPathOnStart: 0
   useDebugControls: 0
   runKey: 1

@@ -9,13 +9,34 @@ public class MinerMiningState : FsmState<MinerAgentController>
     {
         owner.SetCurrentStateName("Mining");
         miningTimer = 0f;
+
+        if (owner.CurrentMine == null)
+        {
+            owner.SendEvent(MinerFsmEvents.MineLost);
+            return;
+        }
+
+        if (!owner.CurrentMine.IsReservedBy(owner) || !owner.CurrentMine.HasGold)
+        {
+            owner.CurrentMine.Release(owner);
+            owner.ClearAssignedMine();
+            owner.SendEvent(MinerFsmEvents.MineLost);
+        }
     }
 
     public override void Update()
     {
         if (owner.CurrentMine == null)
         {
-            owner.SendEvent(MinerFsmEvents.MineEmpty);
+            owner.SendEvent(MinerFsmEvents.MineLost);
+            return;
+        }
+
+        if (!owner.CurrentMine.IsReservedBy(owner) || !owner.CurrentMine.HasGold)
+        {
+            owner.CurrentMine.Release(owner);
+            owner.ClearAssignedMine();
+            owner.SendEvent(MinerFsmEvents.MineLost);
             return;
         }
 
@@ -31,15 +52,14 @@ public class MinerMiningState : FsmState<MinerAgentController>
         if (extractedGold > 0)
         {
             owner.AddGold(extractedGold);
-        }
 
-        if (owner.IsInventoryFull())
-        {
-            owner.SendEvent(MinerFsmEvents.InventoryFull);
-            return;
+            if (owner.IsInventoryFull())
+            {
+                owner.SendEvent(MinerFsmEvents.InventoryFull);
+                return;
+            }
         }
-
-        if (!owner.CurrentMine.HasGold)
+        else
         {
             owner.SendEvent(MinerFsmEvents.MineEmpty);
         }

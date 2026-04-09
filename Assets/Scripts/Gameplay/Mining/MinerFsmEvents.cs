@@ -6,4 +6,5 @@ public static class MinerFsmEvents
     public const string MineEmpty = "MineEmpty";
     public const string ReachedBase = "ReachedBase";
     public const string UnloadComplete = "UnloadComplete";
+    public const string MineLost = "MineLost";
 }

@@ -4,9 +4,15 @@ public class MinerReturnToBaseState : FsmState<MinerAgentController>
     {
         owner.SetCurrentStateName("Returning To Base");
 
+        if (owner.CarriedGold <= 0)
+        {
+            owner.SendEvent(MinerFsmEvents.MineLost);
+            return;
+        }
+
         if (owner.HomeBase != null)
         {
-            owner.PathNodeAgent.SetDestination(owner.HomeBase.transform.position);
+            owner.PathNodeAgent.SetDestination(owner.HomeBase.InteractionPosition);
         }
     }
 
@@ -15,7 +21,7 @@ public class MinerReturnToBaseState : FsmState<MinerAgentController>
         if (owner.HomeBase == null)
             return;
 
-        if (owner.IsNearTarget(owner.HomeBase.transform.position))
+        if (owner.IsNearTarget(owner.HomeBase.InteractionPosition))
         {
             owner.PathNodeAgent.StopMoving();
             owner.SendEvent(MinerFsmEvents.ReachedBase);
