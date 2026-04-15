@@ -7,6 +7,7 @@ public class MinerIdleState : FsmState<MinerAgentController>
 
     public override void Enter()
     {
+        owner.ClearRecentDamageFlag();
         owner.SetCurrentStateName("Idle");
         owner.PathNodeAgent.StopMoving();
         retryTimer = 0f;

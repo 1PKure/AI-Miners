@@ -12,6 +12,26 @@ PrefabInstance:
       propertyPath: m_Name
       value: PP_Crystal_Cluster_02_Blue Variant
       objectReference: {fileID: 0}
+    - target: {fileID: 1549301485699793141, guid: 2b8da405a5a51644b9cf209254b5df86, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1549301485699793141, guid: 2b8da405a5a51644b9cf209254b5df86, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1549301485699793141, guid: 2b8da405a5a51644b9cf209254b5df86, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1783390666929376797, guid: 2b8da405a5a51644b9cf209254b5df86, type: 3}
+      propertyPath: mineInterval
+      value: 0.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 1783390666929376797, guid: 2b8da405a5a51644b9cf209254b5df86, type: 3}
+      propertyPath: scorePerUnit
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 5299586771744465433, guid: 2b8da405a5a51644b9cf209254b5df86, type: 3}
       propertyPath: m_LocalPosition.x
       value: -7.51

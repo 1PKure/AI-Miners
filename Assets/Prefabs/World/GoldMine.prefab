@@ -126,7 +126,7 @@ MonoBehaviour:
   resourceType: 0
   currentAmount: 50
   scorePerUnit: 1
-  mineInterval: 0.5
+  mineInterval: 0.4
   interactionPoint: {fileID: 8295831027984029440}
 --- !u!1 &5268501797062708966
 GameObject:
@@ -169,15 +169,15 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 5961528375449695220, guid: e4589efd75ab37041a6bae97d9ebcdb8, type: 3}
       propertyPath: m_LocalScale.x
-      value: 0.1633183
+      value: 0.4
       objectReference: {fileID: 0}
     - target: {fileID: 5961528375449695220, guid: e4589efd75ab37041a6bae97d9ebcdb8, type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.1633183
+      value: 0.4
       objectReference: {fileID: 0}
     - target: {fileID: 5961528375449695220, guid: e4589efd75ab37041a6bae97d9ebcdb8, type: 3}
       propertyPath: m_LocalScale.z
-      value: 0.1633183
+      value: 0.4
       objectReference: {fileID: 0}
     - target: {fileID: 5961528375449695220, guid: e4589efd75ab37041a6bae97d9ebcdb8, type: 3}
       propertyPath: m_LocalPosition.x

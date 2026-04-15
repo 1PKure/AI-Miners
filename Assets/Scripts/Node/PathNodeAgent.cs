@@ -22,6 +22,9 @@ public class PathNodeAgent : MonoBehaviour
     [SerializeField] private bool drawPath = true;
     [SerializeField] private float destinationUpdateThreshold = 0.5f;
 
+    [Header("Cost Movement")]
+    [SerializeField] private bool useNodeCostSpeedPenalty = true;
+    [SerializeField] private float minimumSpeedMultiplier = 0.35f;
 
     private List<PathNode> currentPath = new List<PathNode>();
     private int currentPathIndex = 0;
@@ -210,10 +213,13 @@ public class PathNodeAgent : MonoBehaviour
         Vector3 targetPosition = currentTargetNode.WorldPosition;
         targetPosition.y = transform.position.y;
 
+        float speedMultiplier = GetSpeedMultiplier(currentTargetNode);
+        float finalSpeed = moveSpeed * speedMultiplier;
+
         transform.position = Vector3.MoveTowards(
             transform.position,
             targetPosition,
-            moveSpeed * Time.deltaTime
+            finalSpeed * Time.deltaTime
         );
 
         float distance = Vector3.Distance(transform.position, targetPosition);
@@ -231,6 +237,14 @@ public class PathNodeAgent : MonoBehaviour
         }
     }
 
+    private float GetSpeedMultiplier(PathNode node)
+    {
+        if (!useNodeCostSpeedPenalty || node == null)
+            return 1f;
+
+        float multiplier = 1f / Mathf.Max(1f, node.NodeCost);
+        return Mathf.Clamp(multiplier, minimumSpeedMultiplier, 1f);
+    }
     private void OnDrawGizmos()
     {
         if (!drawPath || currentPath == null || currentPath.Count == 0)

@@ -31,6 +31,11 @@ public class PathNodeGenerator : MonoBehaviour
     [SerializeField] private Transform floorTransform;
     [SerializeField] private Renderer floorRenderer;
 
+    [Header("Cost Zone Detection")]
+    [SerializeField] private bool useCostZones = true;
+    [SerializeField] private LayerMask costZoneLayer;
+    [SerializeField] private float costZoneCheckRadius = 0.2f;
+
     [Header("Auto Fit To Floor")]
     [SerializeField] private bool autoFitToFloor = true;
     [SerializeField] private float borderPadding = 0.5f;
@@ -66,7 +71,7 @@ public class PathNodeGenerator : MonoBehaviour
             {
                 Vector3 worldPosition = GetWorldPosition(x, y);
                 bool isWalkable = CheckIfWalkable(worldPosition);
-                float nodeCost = GetNodeCost();
+                float nodeCost = GetNodeCost(worldPosition);
 
                 PathNode newNode = Instantiate(nodePrefab, worldPosition, Quaternion.identity, transform);
                 newNode.name = $"Node_{x}_{y}";
@@ -176,12 +181,28 @@ public class PathNodeGenerator : MonoBehaviour
         return !hasObstacle;
     }
 
-    private float GetNodeCost()
+    private float GetNodeCost(Vector3 worldPosition)
     {
-        if (!useRandomNodeCosts)
-            return defaultNodeCost;
+        float cost = useRandomNodeCosts
+            ? Random.Range(minRandomCost, maxRandomCost)
+            : defaultNodeCost;
 
-        return Random.Range(minRandomCost, maxRandomCost);
+        if (!useCostZones)
+            return cost;
+
+        Collider[] hits = Physics.OverlapSphere(worldPosition, costZoneCheckRadius, costZoneLayer);
+
+        for (int i = 0; i < hits.Length; i++)
+        {
+            NodeCostZone zone = hits[i].GetComponent<NodeCostZone>();
+
+            if (zone != null)
+            {
+                cost = Mathf.Max(cost, zone.NodeCost);
+            }
+        }
+
+        return cost;
     }
 
     public PathNode GetNode(int x, int y)

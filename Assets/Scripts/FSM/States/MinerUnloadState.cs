@@ -4,24 +4,13 @@ public class MinerUnloadState : FsmState<MinerAgentController>
     {
         owner.SetCurrentStateName("Unloading");
 
-        if (owner.HomeBase != null && owner.CarriedAmount > 0)
+        if (owner.CarriedAmount <= 0)
         {
-            owner.HomeBase.Deposit(
-                owner.CarriedResourceType,
-                owner.CarriedAmount,
-                owner.CarriedScorePerUnit
-            );
+            owner.SendEvent(MinerFsmEvents.UnloadComplete);
+            return;
         }
 
-        owner.ClearCarriedResource();
-
-        if (owner.CurrentResourceNode != null)
-        {
-            owner.CurrentResourceNode.Release(owner);
-            owner.ClearAssignedResourceNode();
-        }
-
-        owner.SendEvent(MinerFsmEvents.UnloadComplete);
+        owner.StartUnloadRoutine();
     }
 
     public override void Update()
@@ -30,5 +19,6 @@ public class MinerUnloadState : FsmState<MinerAgentController>
 
     public override void Exit()
     {
+        owner.StopActiveRoutine();
     }
 }
