@@ -1,5 +1,10 @@
+using UnityEngine;
+
 public class EnemyChaseState : FsmState<EnemyAgentController>
 {
+    private float repathTimer;
+    private const float repathInterval = 0.25f;
+
     public override void Enter()
     {
         owner.SetCurrentStateName("Chasing");
@@ -10,6 +15,7 @@ public class EnemyChaseState : FsmState<EnemyAgentController>
             return;
         }
 
+        repathTimer = 0f;
         owner.UpdatePathToTarget();
     }
 
@@ -29,7 +35,13 @@ public class EnemyChaseState : FsmState<EnemyAgentController>
             return;
         }
 
-        owner.UpdatePathToTarget();
+        repathTimer -= Time.deltaTime;
+
+        if (repathTimer <= 0f)
+        {
+            repathTimer = repathInterval;
+            owner.UpdatePathToTarget();
+        }
 
         if (owner.IsTargetInAttackRange())
         {

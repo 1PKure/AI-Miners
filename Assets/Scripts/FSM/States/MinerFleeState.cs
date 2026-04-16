@@ -3,7 +3,7 @@ using UnityEngine;
 public class MinerFleeState : FsmState<MinerAgentController>
 {
     private float repathTimer;
-    private const float repathInterval = 0.4f;
+    private const float repathInterval = 0.35f;
 
     public override void Enter()
     {
@@ -16,6 +16,7 @@ public class MinerFleeState : FsmState<MinerAgentController>
             owner.AbandonCurrentResourceNode();
         }
 
+        repathTimer = 0f;
         UpdateFleePath();
     }
 

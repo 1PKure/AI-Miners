@@ -162,6 +162,6 @@ MonoBehaviour:
   maxHealth: 10
   currentHealth: 0
   isDead: 0
-  fleeDistance: 2
-  safeDistance: 5
+  fleeDistance: 5
+  safeDistance: 7
   fearCooldown: 1

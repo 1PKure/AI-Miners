@@ -5606,14 +5606,6 @@ PrefabInstance:
       propertyPath: nodeGenerator
       value: 
       objectReference: {fileID: 1818236409}
-    - target: {fileID: 6684420699993926764, guid: 4e036f155c0c7524a93e21ae1ce059a3, type: 3}
-      propertyPath: threatRange
-      value: 4
-      objectReference: {fileID: 0}
-    - target: {fileID: 6684420699993926764, guid: 4e036f155c0c7524a93e21ae1ce059a3, type: 3}
-      propertyPath: detectionRadius
-      value: 8
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

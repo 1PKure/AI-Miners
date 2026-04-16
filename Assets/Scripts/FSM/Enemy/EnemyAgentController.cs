@@ -5,8 +5,8 @@ public class EnemyAgentController : MonoBehaviour
 {
     [Header("Detection")]
     [SerializeField] private float detectionRadius = 5f;
-    [SerializeField] private float threatRange = 2f;
-    [SerializeField] private float attackRange = 1.25f;
+    [SerializeField] private float attackRange = 1f;
+    [SerializeField] private float attackExitRange = 1.5f;
     [SerializeField] private LayerMask minerLayer;
 
     [Header("Combat")]
@@ -21,10 +21,10 @@ public class EnemyAgentController : MonoBehaviour
     private MinerAgentController currentTarget;
     private float attackTimer;
 
+    public float AttackExitRange => attackExitRange;
     public PathNodeAgent PathNodeAgent => pathNodeAgent;
     public MinerAgentController CurrentTarget => currentTarget;
     public float DetectionRadius => detectionRadius;
-    public float ThreatRange => threatRange;
     public float AttackRange => attackRange;
     public int DamagePerHit => damagePerHit;
     public float AttackInterval => attackInterval;
@@ -122,15 +122,6 @@ public class EnemyAgentController : MonoBehaviour
         return distance <= detectionRadius;
     }
 
-    public bool IsTargetInThreatRange()
-    {
-        if (!HasValidTarget())
-            return false;
-
-        float distance = Vector3.Distance(transform.position, currentTarget.transform.position);
-        return distance <= threatRange;
-    }
-
     public bool IsTargetInAttackRange()
     {
         if (!HasValidTarget())
@@ -164,8 +155,17 @@ public class EnemyAgentController : MonoBehaviour
         if (!HasValidTarget())
             return;
 
-        currentTarget.TakeDamage(damagePerHit);
         currentTarget.AssignThreat(this);
+        currentTarget.TakeDamage(damagePerHit);
         attackTimer = attackInterval;
+    }
+
+    public bool IsTargetOutsideAttackExitRange()
+    {
+        if (!HasValidTarget())
+            return true;
+
+        float distance = Vector3.Distance(transform.position, currentTarget.transform.position);
+        return distance > attackExitRange;
     }
 }

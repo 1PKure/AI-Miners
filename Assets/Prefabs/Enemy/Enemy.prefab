@@ -150,7 +150,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   detectionRadius: 5
   threatRange: 3
-  attackRange: 1.25
+  attackRange: 1
+  attackExitRange: 1.6
   minerLayer:
     serializedVersion: 2
     m_Bits: 512

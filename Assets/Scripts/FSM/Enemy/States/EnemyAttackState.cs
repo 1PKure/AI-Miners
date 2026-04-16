@@ -22,13 +22,11 @@ public class EnemyAttackState : FsmState<EnemyAgentController>
             return;
         }
 
-        if (!owner.IsTargetInAttackRange())
+        if (owner.IsTargetOutsideAttackExitRange())
         {
             owner.SendEvent(EnemyFsmEvents.MinerOutOfRange);
             return;
         }
-
-        owner.CurrentTarget.AssignThreat(owner);
 
         if (owner.CanAttackNow())
         {

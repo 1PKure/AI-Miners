@@ -116,20 +116,14 @@ public class MinerAgentController : MonoBehaviour
 
     private void Update()
     {
-        if (stateMachine == null)
-            return;
-
-        stateMachine.Update();
-
         if (fearTimer > 0f)
         {
             fearTimer -= Time.deltaTime;
         }
+        if (stateMachine == null)
+            return;
 
-        if (Input.GetKeyDown(KeyCode.K))
-        {
-            TakeDamage(999);
-        }
+        stateMachine.Update();
 
         if (forbiddenResourceTimer > 0f)
         {
@@ -172,15 +166,8 @@ public class MinerAgentController : MonoBehaviour
         if (isDead || enemy == null)
             return;
 
-        if (currentThreat == enemy)
-        {
-            fearTimer = fearCooldown;
-            return;
-        }
-
         currentThreat = enemy;
         fearTimer = fearCooldown;
-        SendEvent(MinerFsmEvents.EnemyDetected);
     }
 
     public void ClearThreat()
