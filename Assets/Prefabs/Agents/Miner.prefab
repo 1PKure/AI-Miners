@@ -126,8 +126,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nodeGenerator: {fileID: 0}
   debugTarget: {fileID: 0}
-  moveSpeed: 4
-  reachDistance: 1
+  moveSpeed: 5
+  reachDistance: 0.3
   requestPathOnStart: 0
   useDebugControls: 0
   runKey: 1
@@ -135,7 +135,7 @@ MonoBehaviour:
   drawPath: 1
   destinationUpdateThreshold: 0.5
   useNodeCostSpeedPenalty: 1
-  minimumSpeedMultiplier: 0.35
+  minimumSpeedMultiplier: 0.4
 --- !u!114 &4139919083986402450
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -162,6 +162,6 @@ MonoBehaviour:
   maxHealth: 10
   currentHealth: 0
   isDead: 0
-  fleeDistance: 5
-  safeDistance: 7
-  fearCooldown: 1
+  fleeDistance: 4
+  safeDistance: 6
+  fearCooldown: 0.75

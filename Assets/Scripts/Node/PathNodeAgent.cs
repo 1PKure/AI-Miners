@@ -10,7 +10,7 @@ public class PathNodeAgent : MonoBehaviour
 
     [Header("Movement")]
     [SerializeField] private float moveSpeed = 3f;
-    [SerializeField] private float reachDistance = 0.05f;
+    [SerializeField] private float reachDistance = 0.1f;
     [SerializeField] private bool requestPathOnStart = false;
 
     [Header("Debug Controls")]
@@ -33,8 +33,11 @@ public class PathNodeAgent : MonoBehaviour
     private Vector3 lastRequestedDestination;
     private bool hasRequestedDestination = false;
     private bool hasReachedDestination = false;
+    public bool HasValidPath => currentPath != null && currentPath.Count > 0;
+    private PathNode lastStartNode;
+    private PathNode lastGoalNode;
+    public PathNodeGenerator NodeGenerator => nodeGenerator;
     public bool HasReachedDestination => hasReachedDestination;
-
     public List<PathNode> CurrentPath => currentPath;
     public bool IsMoving => isMoving;
     public float MoveSpeed => moveSpeed;
@@ -88,6 +91,8 @@ public class PathNodeAgent : MonoBehaviour
         currentPath.Clear();
         hasRequestedDestination = false;
         hasReachedDestination = false;
+        lastStartNode = null;
+        lastGoalNode = null;
     }
 
     [ContextMenu("Request Path To Debug Target")]
@@ -123,14 +128,6 @@ public class PathNodeAgent : MonoBehaviour
             return;
         }
 
-        if (!forceRefresh && hasRequestedDestination)
-        {
-            float destinationDelta = Vector3.Distance(lastRequestedDestination, worldPosition);
-
-            if (destinationDelta < destinationUpdateThreshold)
-                return;
-        }
-
         PathNode startNode = nodeGenerator.GetClosestNode(transform.position);
         PathNode goalNode = nodeGenerator.GetClosestNode(worldPosition);
 
@@ -145,9 +142,25 @@ public class PathNodeAgent : MonoBehaviour
         }
 
         if (startNode == null || goalNode == null)
-        {
             return;
+
+        if (!forceRefresh)
+        {
+            if (hasRequestedDestination)
+            {
+                float destinationDelta = Vector3.Distance(lastRequestedDestination, worldPosition);
+
+                bool sameStartNode = lastStartNode == startNode;
+                bool sameGoalNode = lastGoalNode == goalNode;
+
+                if (destinationDelta < destinationUpdateThreshold && sameStartNode && sameGoalNode)
+                    return;
+
+                if (sameGoalNode && isMoving)
+                    return;
+            }
         }
+
         List<PathNode> newPath = PathfindingManager.Instance.FindPath(startNode, goalNode);
 
         if (newPath == null)
@@ -172,7 +185,7 @@ public class PathNodeAgent : MonoBehaviour
         if (currentPath.Count == 0)
         {
             isMoving = false;
-            hasReachedDestination = true;
+            hasReachedDestination = false;
         }
         else
         {
@@ -182,6 +195,8 @@ public class PathNodeAgent : MonoBehaviour
 
         lastRequestedDestination = worldPosition;
         hasRequestedDestination = true;
+        lastStartNode = startNode;
+        lastGoalNode = goalNode;
     }
 
     private void MoveAlongPath()
@@ -245,6 +260,7 @@ public class PathNodeAgent : MonoBehaviour
         float multiplier = 1f / Mathf.Max(1f, node.NodeCost);
         return Mathf.Clamp(multiplier, minimumSpeedMultiplier, 1f);
     }
+
     private void OnDrawGizmos()
     {
         if (!drawPath || currentPath == null || currentPath.Count == 0)

@@ -5,6 +5,7 @@ public class EnemyAgentController : MonoBehaviour
 {
     [Header("Detection")]
     [SerializeField] private float detectionRadius = 5f;
+    [SerializeField] private float loseTargetRadius = 7f;
     [SerializeField] private float attackRange = 1f;
     [SerializeField] private float attackExitRange = 1.5f;
     [SerializeField] private LayerMask minerLayer;
@@ -13,6 +14,10 @@ public class EnemyAgentController : MonoBehaviour
     [SerializeField] private int damagePerHit = 1;
     [SerializeField] private float attackInterval = 1f;
 
+    [Header("Target Memory")]
+    [SerializeField] private float loseTargetDelay = 0.75f;
+    [SerializeField] private float idleReacquireCooldown = 0.4f;
+
     [Header("Debug")]
     [SerializeField] private string currentStateName;
 
@@ -20,15 +25,18 @@ public class EnemyAgentController : MonoBehaviour
     private PathNodeAgent pathNodeAgent;
     private MinerAgentController currentTarget;
     private float attackTimer;
+    private float reacquireTimer;
 
+    public float DetectionRadius => detectionRadius;
+    public float LoseTargetRadius => loseTargetRadius;
+    public float AttackRange => attackRange;
     public float AttackExitRange => attackExitRange;
+    public float AttackInterval => attackInterval;
+    public int DamagePerHit => damagePerHit;
+    public string CurrentStateName => currentStateName;
     public PathNodeAgent PathNodeAgent => pathNodeAgent;
     public MinerAgentController CurrentTarget => currentTarget;
-    public float DetectionRadius => detectionRadius;
-    public float AttackRange => attackRange;
-    public int DamagePerHit => damagePerHit;
-    public float AttackInterval => attackInterval;
-    public string CurrentStateName => currentStateName;
+    public float LoseTargetDelay => loseTargetDelay;
 
     private void Awake()
     {
@@ -56,6 +64,9 @@ public class EnemyAgentController : MonoBehaviour
 
     private void Update()
     {
+        if (reacquireTimer > 0f)
+            reacquireTimer -= Time.deltaTime;
+
         if (stateMachine == null)
             return;
 
@@ -75,6 +86,16 @@ public class EnemyAgentController : MonoBehaviour
     public void ClearTarget()
     {
         currentTarget = null;
+    }
+
+    public void StartReacquireCooldown()
+    {
+        reacquireTimer = idleReacquireCooldown;
+    }
+
+    public bool CanReacquireTarget()
+    {
+        return reacquireTimer <= 0f;
     }
 
     public void SendEvent(string trigger)
@@ -122,6 +143,15 @@ public class EnemyAgentController : MonoBehaviour
         return distance <= detectionRadius;
     }
 
+    public bool IsTargetInsideLoseRadius()
+    {
+        if (!HasValidTarget())
+            return false;
+
+        float distance = Vector3.Distance(transform.position, currentTarget.transform.position);
+        return distance <= loseTargetRadius;
+    }
+
     public bool IsTargetInAttackRange()
     {
         if (!HasValidTarget())
@@ -129,6 +159,15 @@ public class EnemyAgentController : MonoBehaviour
 
         float distance = Vector3.Distance(transform.position, currentTarget.transform.position);
         return distance <= attackRange;
+    }
+
+    public bool IsTargetOutsideAttackExitRange()
+    {
+        if (!HasValidTarget())
+            return true;
+
+        float distance = Vector3.Distance(transform.position, currentTarget.transform.position);
+        return distance > attackExitRange;
     }
 
     public void UpdatePathToTarget()
@@ -158,14 +197,5 @@ public class EnemyAgentController : MonoBehaviour
         currentTarget.AssignThreat(this);
         currentTarget.TakeDamage(damagePerHit);
         attackTimer = attackInterval;
-    }
-
-    public bool IsTargetOutsideAttackExitRange()
-    {
-        if (!HasValidTarget())
-            return true;
-
-        float distance = Vector3.Distance(transform.position, currentTarget.transform.position);
-        return distance > attackExitRange;
     }
 }

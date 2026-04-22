@@ -32,7 +32,6 @@ public class MinerAgentController : MonoBehaviour
     [SerializeField] private float fleeDistance = 6f;
     [SerializeField] private float safeDistance = 8f;
     [SerializeField] private float fearCooldown = 2f;
-
     public EnemyAgentController CurrentThreat => currentThreat;
     public float FleeDistance => fleeDistance;
     public float SafeDistance => safeDistance;
@@ -179,15 +178,16 @@ public class MinerAgentController : MonoBehaviour
         if (currentThreat == null)
             return transform.position;
 
-        Vector3 direction = (transform.position - currentThreat.transform.position).normalized;
+        Vector3 currentPos = transform.position;
+        Vector3 threatPos = currentThreat.transform.position;
 
-        if (direction.sqrMagnitude < 0.01f)
-        {
-            direction = transform.forward;
-        }
+        Vector3 awayDirection = (currentPos - threatPos).normalized;
 
-        Vector3 rawTarget = transform.position + direction * safeDistance;
-        return rawTarget;
+        if (awayDirection.sqrMagnitude < 0.01f)
+            awayDirection = transform.forward;
+
+        Vector3 fleeTarget = currentPos + awayDirection * fleeDistance;
+        return fleeTarget;
     }
     public void SetCurrentStateName(string stateName)
     {
@@ -396,5 +396,8 @@ public class MinerAgentController : MonoBehaviour
             currentResourceNode = null;
         }
     }
+
+
+
 }
 #pragma warning restore CS0414

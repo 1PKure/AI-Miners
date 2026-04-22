@@ -149,12 +149,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   detectionRadius: 5
-  threatRange: 3
+  loseTargetRadius: 6
   attackRange: 1
-  attackExitRange: 1.6
+  attackExitRange: 1.5
   minerLayer:
     serializedVersion: 2
     m_Bits: 512
   damagePerHit: 2
   attackInterval: 1
+  loseTargetDelay: 0.4
+  idleReacquireCooldown: 0.8
   currentStateName: 

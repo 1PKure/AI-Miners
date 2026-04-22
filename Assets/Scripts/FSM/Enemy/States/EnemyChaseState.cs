@@ -3,7 +3,9 @@ using UnityEngine;
 public class EnemyChaseState : FsmState<EnemyAgentController>
 {
     private float repathTimer;
-    private const float repathInterval = 0.25f;
+    private float lostTargetTimer;
+
+    private const float repathInterval = 0.5f;
 
     public override void Enter()
     {
@@ -16,6 +18,7 @@ public class EnemyChaseState : FsmState<EnemyAgentController>
         }
 
         repathTimer = 0f;
+        lostTargetTimer = 0f;
         owner.UpdatePathToTarget();
     }
 
@@ -27,26 +30,35 @@ public class EnemyChaseState : FsmState<EnemyAgentController>
             return;
         }
 
-        if (!owner.IsTargetInsideDetection())
-        {
-            owner.ClearTarget();
-            owner.PathNodeAgent.StopMoving();
-            owner.SendEvent(EnemyFsmEvents.MinerLost);
-            return;
-        }
-
-        repathTimer -= Time.deltaTime;
-
-        if (repathTimer <= 0f)
-        {
-            repathTimer = repathInterval;
-            owner.UpdatePathToTarget();
-        }
-
         if (owner.IsTargetInAttackRange())
         {
             owner.PathNodeAgent.StopMoving();
             owner.SendEvent(EnemyFsmEvents.MinerInRange);
+            return;
+        }
+
+        if (!owner.IsTargetInsideLoseRadius())
+        {
+            lostTargetTimer += Time.deltaTime;
+
+            if (lostTargetTimer >= owner.LoseTargetDelay)
+            {
+                owner.PathNodeAgent.StopMoving();
+                owner.ClearTarget();
+                owner.StartReacquireCooldown();
+                owner.SendEvent(EnemyFsmEvents.MinerLost);
+            }
+
+            return;
+        }
+
+        lostTargetTimer = 0f;
+
+        repathTimer -= Time.deltaTime;
+        if (repathTimer <= 0f)
+        {
+            repathTimer = repathInterval;
+            owner.UpdatePathToTarget();
         }
     }
 
